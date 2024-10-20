@@ -1,11 +1,11 @@
 package com.sebscode;
 
 import jakarta.persistence.*;
-
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class Customer {
+public class Customer implements Serializable {
 
     @Id
     @SequenceGenerator(

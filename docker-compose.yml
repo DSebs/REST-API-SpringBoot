@@ -1,22 +1,52 @@
 services:
+  app:
+    build: .
+    container_name: spring-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/customer
+      SPRING_DATASOURCE_USERNAME: amigoscode
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    networks:
+      - app-network
+
   db:
     container_name: postgres
     image: postgres:14.1
     environment:
       POSTGRES_USER: amigoscode
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: customer
       PGDATA: /data/postgres
     volumes:
-      - db:/data/postgres
+      - db-data:/data/postgres
     ports:
       - "5332:5432"
     networks:
-      - db
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis:6.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
     restart: unless-stopped
 
 networks:
-  db:
+  app-network:
     driver: bridge
 
 volumes:
-  db:
+  db-data:
+  redis-data:
